@@ -1,0 +1,86 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="home automation server">
+    <meta name="author" content="nielu">
+
+    <title>Dashboard Template for Bootstrap</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="../static/content/bootstrap.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="../static/scripts/bootstrap.js"></script>
+
+    <!-- Custom styles for this template -->
+    <link href="../static/content/site.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"\
+                    data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">FUSS</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Dashboard</a></li>
+                {% if not session.logged_in %}
+                    <li><a href="{{ url_for('register_user') }}">Register</a></li>
+                    <li><a href="{{ url_for('login') }}">log in</a></li>
+                {% else %}
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="#">Profile</a></li>
+                    <li><a href="{{ url_for('logout') }}">log out</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="col-sm-3 col-md-2 sidebar">
+        <div class="row">
+            <ul class="nav nav-sidebar">
+                <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+                <li><a href="#">Reports</a></li>
+                <li><a href="#">Analytics</a></li>
+                <li><a href="#">Export</a></li>
+            </ul>
+            <ul class="nav nav-sidebar">
+                <li><a href="">Temperature</a></li>
+                <li><a href="">Humidity</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-0 main">
+        {% block body %}{% endblock %}
+
+
+        {% for message in get_flashed_messages() %}
+            <div class=flash>{{ message }}</div>
+        {% endfor %}
+
+        <div class=options>
+            {% block options %}{% endblock %}
+        </div>
+    </div>
+</div>
+</body>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+
+<script src="../static/scripts/jquery-1.10.2.min.js"></script>
+
+</html>

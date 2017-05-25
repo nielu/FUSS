@@ -1,0 +1,3 @@
+db_name = 'db_filename.db'
+secret_key ='super_secret_development_key'
+debug = True
