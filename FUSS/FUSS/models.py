@@ -6,6 +6,7 @@ from timeit import default_timer as timer
 import sqlite3
 import os
 import datetime
+import pkgutil
 #endregion
 
 #region Database
@@ -39,6 +40,15 @@ def close_db(error):
         g.sqlite_db.close()
 #endregion
 
+def init_devices():
+    import pkgutil
+    import importlib
+    modules = [name for _, name, _ in pkgutil.iter_modules(['FUSS\devices'])]
+    print('Got {} module(s)'.format(len(modules)))
+    for m in modules:
+        print('Loading device module {}'.format(m))
+        devModule = importlib.import_module('FUSS.devices.{}'.format(m))
+        app.register_blueprint(devModule.device_blueprint, url_prefix=m)
 
 def createGraph():
     start_time = timer()

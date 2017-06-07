@@ -3,7 +3,7 @@ This script runs the FUSS application using a development server.
 """
 
 from os import environ, path
-from FUSS import app
+from FUSS import app, models
 
 if __name__ == '__main__':
     host = 'localhost'
