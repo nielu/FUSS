@@ -4,7 +4,7 @@ from FUSS import models
 from sys import modules
 
 device_blueprint = Blueprint('SI7021', __name__, template_folder='templates')
-
+data_axis = ["Date", ["Temp", "Humidity"]]
 
 @device_blueprint.route('/')
 def main_view():
@@ -19,39 +19,10 @@ def temp_graph():
     from matplotlib.figure import Figure
     from matplotlib.dates import date2num
     import io
-    import datetime
-    tformat = '%Y-%m-%d'
-    db = models.get_db()
-    x = []
-    y_temp = []
-    y_hum = []
-    entryCount =15
-    tempID = db.execute("SELECT id FROM sensors WHERE instr(name, 'temp_SI')").fetchone()[0]
-    humID = db.execute("SELECT id FROM sensors WHERE instr(name, 'hum_SI')").fetchone()[0]
-    startDate = db.execute('SELECT date FROM entries WHERE sensor_type == ? ORDER BY date ASC LIMIT 1',
-                           [tempID]).fetchone()[0]
-
-    startDate = datetime.datetime.strptime(startDate, '%Y-%m-%d %H:%M:%S')
-    endDate = db.execute('SELECT date FROM entries WHERE sensor_type == ? ORDER BY date DESC LIMIT 1',
-                           [tempID]).fetchone()[0]
-
-    endDate = datetime.datetime.strptime(endDate, '%Y-%m-%d %H:%M:%S')
-
-    delta = endDate - startDate
-    separator = delta/entryCount
-    d1 = startDate
-    d2 = startDate + separator
-    for i in range(0, entryCount):
-        avg = db.execute('SELECT avg(reading) FROM entries WHERE sensor_type == ? AND date > ? AND date <= ?',
-                         [tempID,d1.strftime(tformat), d2.strftime(tformat)]).fetchone()[0]
-        y_temp.append(avg)
-        avg = db.execute('SELECT avg(reading) FROM entries WHERE sensor_type == ? AND date > ? AND date <= ?',
-                         [humID,d1.strftime(tformat), d2.strftime(tformat)]).fetchone()[0]
-        y_hum.append(avg)
-        x.append((d1.strftime(tformat)))
-        d1 += separator
-        d2 += separator
-
+    x,y = get_data(None,None, 15)
+    y_temp = y[0]
+    y_hum = y[1]
+    
     
     fig = Figure()
     canvas = FigureCanvas(fig)
@@ -72,3 +43,46 @@ def temp_graph():
     response = make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
     return response
+
+
+def get_data(d1, d2, sample_count = 10):
+    import datetime
+    """gets sensor readings from d1 to d2 """
+    tformat = '%Y-%m-%d'
+    db = models.get_db()
+    humID = get_sensor_id()[1][0]
+    tempID = get_sensor_id()[0][0]
+    if d1 == None:
+        startDate = db.execute('SELECT date FROM entries WHERE sensor_type == ? ORDER BY date ASC LIMIT 1',
+                           [tempID]).fetchone()[0]
+        startDate = datetime.datetime.strptime(startDate, '%Y-%m-%d %H:%M:%S')
+    else:
+        startDate = d1
+
+    if d2 == None:
+        endDate = db.execute('SELECT date FROM entries WHERE sensor_type == ? ORDER BY date DESC LIMIT 1',
+                           [tempID]).fetchone()[0]
+        endDate = datetime.datetime.strptime(endDate, '%Y-%m-%d %H:%M:%S')
+    else:
+        endDate = d2
+    delta = endDate - startDate
+    separator = delta/sample_count
+    x = []
+    y = [[],[]]
+    d1 = startDate
+    d2 = startDate + separator
+    for i in range(0, sample_count):
+        avg = db.execute('SELECT avg(reading) FROM entries WHERE sensor_type == ? AND date > ? AND date <= ?',
+                         [tempID,d1.strftime(tformat), d2.strftime(tformat)]).fetchone()[0]
+        y[0].append(avg)
+        avg = db.execute('SELECT avg(reading) FROM entries WHERE sensor_type == ? AND date > ? AND date <= ?',
+                         [humID,d1.strftime(tformat), d2.strftime(tformat)]).fetchone()[0]
+        y[1].append(avg)
+        x.append((d1.strftime(tformat)))
+        d1 += separator
+        d2 += separator
+    return x,y
+
+def get_sensor_id():
+    db = models.get_db()
+    return db.execute("SELECT id FROM sensors WHERE instr(name, 'SI')").fetchall()
