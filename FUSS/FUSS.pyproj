@@ -17,7 +17,7 @@
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
     <Name>FUSS</Name>
     <RootNamespace>FUSS</RootNamespace>
-    <InterpreterId>MSBuild|env_local|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,12 +30,6 @@
   <ItemGroup>
     <Compile Include="config.py-sample" />
     <Compile Include="config.py" />
-    <Compile Include="FUSS\devices\test_device.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="FUSS\devices\__init__.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="FUSS\models.py">
       <SubType>Code</SubType>
     </Compile>
@@ -45,7 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FUSS\" />
-    <Folder Include="FUSS\devices\" />
     <Folder Include="FUSS\static\" />
     <Folder Include="FUSS\static\content\" />
     <Folder Include="FUSS\static\fonts\" />
@@ -61,7 +54,6 @@
     <Content Include="FUSS\templates\register.html" />
     <Content Include="FUSS\templates\login.html" />
     <Content Include="FUSS\templates\options.html" />
-    <Content Include="FUSS\templates\dummy_page.html" />
     <Content Include="FUSS\templates\show_entries.html" />
     <Content Include="FUSS\templates\show_temp.html" />
     <Content Include="requirements.txt" />
@@ -89,10 +81,10 @@
     <Content Include="FUSS\static\scripts\_references.js" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="env_local\">
-      <Id>env_local</Id>
+    <Interpreter Include="env\">
+      <Id>env</Id>
       <Version>3.6</Version>
-      <Description>env_local (Python 3.6 (64-bit))</Description>
+      <Description>env (Python 3.6 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
