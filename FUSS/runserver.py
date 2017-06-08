@@ -10,6 +10,7 @@ if __name__ == '__main__':
     port = 5000
     secret_key = ''
     db_name = ''
+    db_in_memeory = False
     debug = False
     try:
         from config import *
@@ -17,6 +18,7 @@ if __name__ == '__main__':
         pass
     app.config.update(dict(
     DATABASE=path.join(app.root_path, db_name),
-    SECRET_KEY=secret_key
+    SECRET_KEY=secret_key,
+    DB_IN_MEM=db_in_memeory
     ))
     app.run(host, port, debug=debug)

@@ -1,7 +1,7 @@
 #region imports
 from FUSS import app, bcrypt
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-   flash, make_response, config
+   flash, make_response, config, _app_ctx_stack
 from timeit import default_timer as timer
 import sqlite3
 import os
@@ -25,15 +25,37 @@ def initdb_command():
 
 
 def connect_db():
-    rv = sqlite3.connect(app.config['DATABASE'])
+    from io import StringIO
+    if (app.config['DB_IN_MEM']):
+        print('Loading db to memory')
+        #create temporary file to store in memory
+        file_db = sqlite3.connect(app.config['DATABASE'])
+        tempfile = StringIO()
+        for line in file_db.iterdump():
+            tempfile.write('%s\n' % line)
+        file_db.close()
+        tempfile.seek(0)
+    
+        #create db in memory from file
+        rv = sqlite3.connect(':memory:')
+        rv.cursor().executescript(tempfile.read())
+        rv.commit()
+    else:
+        rv = sqlite3.connect(app.config['DATABASE'])
     rv.row_factory = sqlite3.Row
     return rv
 
 
 def get_db():
-    if not hasattr(g, 'sqlite_db'):
-        g.sqllite_db = connect_db()
-    return g.sqllite_db
+    #if 'sqlite_db' not in app.config
+    #    app.config.update(dict(sqlite_db=connect_db()))
+    #return app.config['sqlite_db']
+    #if not hasattr(flask.g, 'sqlite_db'):
+    #    g.sqllite_db = connect_db()
+    #return g.sqllite_db
+    if not hasattr(app, 'sqlite_db'):
+        app.sqlite_db = connect_db()
+    return app.sqlite_db;
 
 @app.teardown_appcontext
 def close_db(error):
