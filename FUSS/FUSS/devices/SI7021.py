@@ -1,14 +1,14 @@
 from flask.views import View
-from flask import render_template, session, Blueprint, make_response
+from flask import render_template, session, Blueprint, make_response, request
 from FUSS import models
 from sys import modules
 
-device_blueprint = Blueprint('SI7021', __name__, template_folder='templates')
+device_blueprint = Blueprint('SI7021', __name__, template_folder='templates/')
 data_axis = ["Date", ["Temp", "Humidity"]]
 
 @device_blueprint.route('/')
 def main_view():
-    return render_template('dummy_page.html', objects=get_objects())
+    return render_template('devices/SI_template.html', objects=get_objects())
 
 def get_objects():
     return {'device_name' : __name__, 'device_type': 'Temperature-humidity-sensor'}
@@ -19,10 +19,15 @@ def temp_graph():
     from matplotlib.figure import Figure
     from matplotlib.dates import date2num
     import io
-    x,y = get_data(None,None, 15)
+    cnt = 15
+    if 'si_limit' in session:
+        cnt = session['si_limit']
+
+    x,y = get_data(None,None, cnt)
     y_temp = y[0]
     y_hum = y[1]
     
+
     
     fig = Figure()
     canvas = FigureCanvas(fig)
@@ -43,6 +48,13 @@ def temp_graph():
     response = make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
     return response
+
+@device_blueprint.route('/update', methods=['POST'])
+def update_settings():
+    if request.method == 'POST':
+        if 'entry_count' in request.form:
+            session['si_limit'] = int(request.form['entry_count'])
+    return main_view()
 
 
 def get_data(d1, d2, sample_count = 10):
@@ -82,6 +94,8 @@ def get_data(d1, d2, sample_count = 10):
         d1 += separator
         d2 += separator
     return x,y
+
+
 
 def get_sensor_id():
     db = models.get_db()

@@ -1,5 +1,5 @@
 from flask.views import View
-from flask import render_template, session, Blueprint, make_response
+from flask import render_template, session, Blueprint, make_response, request
 from FUSS import models
 from sys import modules
 
@@ -8,7 +8,7 @@ data_axis = ["Date", ["Temp"]]
 
 @device_blueprint.route('/')
 def main_view():
-    return render_template('dummy_page.html', objects=get_objects())
+    return render_template('devices/MCP_template.html', objects=get_objects())
 
 def get_objects():
     return {'device_name' : __name__, 'device_type': 'Temperature-sensor'}
@@ -20,7 +20,10 @@ def temp_graph():
     from matplotlib.dates import date2num
     import io
     
-    x,y = get_data(None, None, 25)
+    cnt = 15
+    if 'mcp_limit' in session:
+        cnt = session['mcp_limit']
+    x,y = get_data(None, None, cnt)
 
     fig = Figure()
     canvas = FigureCanvas(fig)
@@ -37,6 +40,12 @@ def temp_graph():
     response.headers['Content-Type'] = 'image/png'
     return response
 
+@device_blueprint.route('/update', methods=['POST'])
+def update_settings():
+    if request.method == 'POST':
+        if 'entry_count' in request.form:
+            session['mcp_limit'] = int(request.form['entry_count'])
+    return main_view()
 
 
 def get_data(d1, d2, sample_count = 10):

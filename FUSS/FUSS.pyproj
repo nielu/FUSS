@@ -45,6 +45,7 @@
   <ItemGroup>
     <Folder Include="FUSS\" />
     <Folder Include="FUSS\devices\" />
+    <Folder Include="FUSS\templates\devices\" />
     <Folder Include="FUSS\devices\__pycache__\" />
     <Folder Include="FUSS\static\" />
     <Folder Include="FUSS\static\content\" />
@@ -55,13 +56,15 @@
   <ItemGroup>
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
+    <Content Include="FUSS\templates\devices\SI_template.html" />
+    <Content Include="FUSS\templates\devices\MCP_template.html" />
     <Content Include="FUSS\devices\__pycache__\test_device.cpython-36.pyc" />
     <Content Include="FUSS\devices\__pycache__\__init__.cpython-36.pyc" />
     <Content Include="FUSS\schema.sql" />
     <Content Include="FUSS\static\content\bootstrap-theme.min.css" />
     <Content Include="FUSS\static\content\bootstrap.min.css" />
     <Content Include="FUSS\static\content\dashboard.css" />
-    <Content Include="FUSS\templates\dummy_page.html" />
+    <Content Include="FUSS\templates\devices\dummy_page.html" />
     <Content Include="FUSS\templates\layout.html" />
     <Content Include="FUSS\templates\register.html" />
     <Content Include="FUSS\templates\login.html" />

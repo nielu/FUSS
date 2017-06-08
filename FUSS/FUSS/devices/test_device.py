@@ -8,7 +8,7 @@ device_blueprint = Blueprint('test_device', __name__, template_folder='templates
 
 @device_blueprint.route('/')
 def main_view():
-    return render_template('dummy_page.html', objects=get_objects())
+    return render_template('devices/dummy_page.html', objects=get_objects())
 
 def get_objects():
     return {'device_name' : 'test_device', 'device_type': 'None'}
