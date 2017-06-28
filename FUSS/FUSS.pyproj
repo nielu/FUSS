@@ -17,8 +17,9 @@
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
     <Name>FUSS</Name>
     <RootNamespace>FUSS</RootNamespace>
-    <InterpreterId>MSBuild|env_local|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,6 +37,9 @@
     <Compile Include="FUSS\devices\test_device.py" />
     <Compile Include="FUSS\devices\__init__.py" />
     <Compile Include="FUSS\models.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FUSS\DBModels.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="runserver.py" />
@@ -81,10 +85,10 @@
     <Content Include="FUSS\static\scripts\bootstrap.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="env_local\">
-      <Id>env_local</Id>
+    <Interpreter Include="env\">
+      <Id>env</Id>
       <Version>3.6</Version>
-      <Description>env_local (Python 3.6 (64-bit))</Description>
+      <Description>env (Python 3.6 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>

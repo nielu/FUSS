@@ -5,8 +5,7 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, make_response
-from FUSS import app
-from FUSS import models
+from FUSS import app, models
 from timeit import default_timer as timer
 #endregion
 
@@ -14,21 +13,6 @@ from timeit import default_timer as timer
 @app.route('/')
 def show_entries():
     return render_template('layout.html')
-
-
-@app.route('/add', methods=['POST'])
-def add_entry():
-    db = models.get_db()
-    mac = int(request.form['MAC'], 16)
-    sensorid = db.execute('SELECT id FROM sensors WHERE mac_address == ? AND function_number == ?',
-                          [mac, request.form['FUNC_ID']]).fetchone()
-    if not sensorid:
-        abort(401)
-    db.execute('insert into entries (sensor_type, date, reading) values (?, ?, ?)',
-                 [sensorid[0],datetime.strftime('%Y-%m-%d %H:%M:%S'), request.form['VALUE']])
-    db.commit()
-    return '', 201
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -72,22 +56,3 @@ def set_options():
             limit = int(request.form['entryCount'])
             session['count_limit'] = limit
     return 'OK',201
-
-
-@app.route('/register_sensor', methods=['POST'])
-def register_sensor():
-    if request.method == 'POST':
-        mac = int(request.form['MAC'], 16)
-
-        funcid = request.form['FUNC_ID']
-        name = request.form['NAME']
-        db = models.get_db()
-        sensors = db.execute('SELECT name FROM sensors WHERE mac_address == ? AND function_number == ?',
-                             [mac, funcid]).fetchall()
-        if len(sensors) == 0:
-            db.execute('INSERT INTO sensors (name, mac_address, function_number, sensor_category) VALUES (?,?,?,0)',
-            [name, mac, funcid])
-            db.commit()
-        return 'OK', 201
-    return 'NA', 403
-#endregion

@@ -2,11 +2,23 @@
 {% block body %}
     <h2>{{ objects['device_name'] }}  : {{ objects['device_type'] }}</h2>
     <img src="graph.png"/>
+    <br />
+    All entries:
+    <br />
+    <img src="all.png" />
+
+
 {% endblock %}
 
 {% block settings %}
-<form action="{{url_for('SI7021.update_settings')}}" method=POST>
+<form action="{{url_for('si7021.update_settings')}}" method=POST>
     <input type="range" min="2" max="50" value="{{session['si_limit']}}" name="entry_count">
     <button id="form_click">Set range</button>
 </form>
+
+
+{% endblock %}
+
+{% block scripts %}
+
 {% endblock %}

@@ -2,10 +2,15 @@
 {% block body %}
     <h3>{{ objects['device_name'] }}  : {{ objects['device_type'] }}</h3>
     <img src="graph.png"/>
+    <br />
+    All entries:
+    <br/>
+    <img src="all.png" />
+
 {% endblock %}
 
 {% block settings %}
-<form action="{{url_for('MCP9808.update_settings')}}" method=POST>
+<form action="{{url_for('mcp9808.update_settings')}}" method=POST>
     <input type="range" min="2" max="50" value="{{session['mcp_limit']}}" name="entry_count">
     <button id="form_click">Set range</button>
 </form>
