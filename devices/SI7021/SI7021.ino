@@ -2,9 +2,8 @@
 	SI7021
 
 	Basic sketch for ESP8266 with SI7021 sensor connected
-	Device push data to server using MQTT protocol
+	Device will push data to server using MQTT protocol
 */
-
 
 #define MQTT_KEEPALIVE 10
 
