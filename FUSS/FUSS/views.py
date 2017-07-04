@@ -56,3 +56,9 @@ def set_options():
             limit = int(request.form['entryCount'])
             session['count_limit'] = limit
     return 'OK',201
+
+@app.route('/cleanup')
+def cleanup():
+    from FUSS import backgroundWorkers as bg
+    bg.start_db_smoother()
+    return 'OK', 201

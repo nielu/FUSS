@@ -106,8 +106,8 @@ def get_all_data():
     tempID = get_sensor_id(TEMP_FUNC)[0]
     humID = get_sensor_id(HUM_FUNC)[0]
 
-    resTemp = SensorEntry.query.filter(SensorEntry.sensor_id == tempID).all()
-    resHum = SensorEntry.query.filter(SensorEntry.sensor_id == humID).all()
+    resTemp = SensorEntry.query.filter(SensorEntry.sensor_id == tempID).order_by(asc(SensorEntry.date)).all()
+    resHum = SensorEntry.query.filter(SensorEntry.sensor_id == humID).order_by(asc(SensorEntry.date)).all()
     y = [[], []]
     for i in range(0, len(resTemp)):
         y[0].append(resTemp[i].reading)

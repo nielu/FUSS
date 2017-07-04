@@ -32,6 +32,9 @@
   <ItemGroup>
     <Compile Include="config.py-sample" />
     <Compile Include="config.py" />
+    <Compile Include="FUSS\backgroundWorkers.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FUSS\devices\SI7021.py" />
     <Compile Include="FUSS\devices\MCP9808.py" />
     <Compile Include="FUSS\devices\test_device.py" />

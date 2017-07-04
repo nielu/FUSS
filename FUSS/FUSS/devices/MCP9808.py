@@ -88,7 +88,7 @@ def update_settings():
 def get_all_data():
     sensorID = get_sensor_id(TEMP_FUNC)[0]
 
-    res = SensorEntry.query.filter(SensorEntry.sensor_id == sensorID).all()
+    res = SensorEntry.query.filter(SensorEntry.sensor_id == sensorID).order_by(asc(SensorEntry.date)).all()
     y = [[]]
     for e in res:
         y[0].append(e.reading)

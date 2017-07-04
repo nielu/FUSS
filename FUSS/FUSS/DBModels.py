@@ -35,14 +35,16 @@ class SensorEntry(db.Model):
     date = db.Column(db.DateTime)
     reading = db.Column(db.Text)
 
-    def __init__(self, sensor_id, reading):
+    def __init__(self, sensor_id, reading, date = None):
         self.sensor_id = sensor_id
         self.reading = reading
-        self.date = datetime.now()
+        if date is None:
+            self.date = datetime.now()
+        else:
+            self.date = date
 
     def __repr__(self):
         return '{} : {}'.format(self.date, self.reading)
-
 
 
 
