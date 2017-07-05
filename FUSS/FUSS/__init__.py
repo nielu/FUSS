@@ -6,6 +6,7 @@ from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_mqtt import Mqtt
 from flask_sqlalchemy import SQLAlchemy
+import logging
 
 app = Flask(__name__)
 
@@ -18,6 +19,10 @@ mqtt_broker = '127.0.0.1'
 mqtt_port = 1883
 
 db_uri = 'db_engine://db_user:db_password@db_address/db_name'
+
+
+logging.basicConfig(filename='FUSS.log', level=logging.DEBUG, \
+    format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 try:
     from config import *
@@ -35,6 +40,10 @@ app.config['SECRET_KEY'] = secret_key
 bcrypt = Bcrypt(app)
 mqtt = Mqtt(app)
 db = SQLAlchemy(app)
+
+logging.info('Running on {}:{}. MQTT broker {}:{}'.format(host,port, mqtt_broker, mqtt_port))
+
+
 
 import FUSS.views
 import FUSS.models

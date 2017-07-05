@@ -8,6 +8,7 @@ import sqlite3
 import os
 import datetime
 import pkgutil
+import logging
 #endregion
 
 
@@ -19,10 +20,10 @@ def init_devices():
     import pkgutil
     import importlib
     modules = [name for _, name, _ in pkgutil.iter_modules(['FUSS/devices'])]
-    print('Got {} module(s)'.format(len(modules)))
+    logging.info('Got {} module(s)'.format(len(modules)))
     devices = []
     for m in modules:
-        print('Loading device module {}'.format(m))
+        logging.info('Loading device module {}'.format(m))
         moduleName = 'FUSS.devices.{}'.format(m)
         devModule = importlib.import_module(moduleName)
         devices.append(m)

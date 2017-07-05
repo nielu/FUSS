@@ -6,6 +6,7 @@ from sys import modules
 from datetime import datetime
 from sqlalchemy import asc, desc
 from sqlalchemy.sql import and_, or_, func
+import logging
 
 '''MCP9808 device package'''
 '''0. Temperature sensor, reads in *C'''
@@ -21,6 +22,7 @@ data_axis = ["Date", ["Temp"]]
 
 def init():
     mqtt.subscribe(device_topic + '#')
+    logging.info('Module MCP9808 loaded')
 
 @device_blueprint.route('/')
 def main_view():
@@ -49,6 +51,7 @@ def graph_all():
     canvas.print_png(png_output)
     response = make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
+    logging.debug('Graphed all entries in MCP9808. Entry count {}'.format(len(y)))
     return response
 
 @device_blueprint.route('/graph.png')
@@ -82,6 +85,7 @@ def update_settings():
     if request.method == 'POST':
         if 'entry_count' in request.form:
             session['mcp_limit'] = int(request.form['entry_count'])
+            logging.debug('set mcp_limit to ' + session['mcp_limit'])
     return main_view()
 
 
@@ -144,6 +148,7 @@ def get_sensor_id(function_number, macAddress=None):
 @mqtt.on_topic(device_topic + '0/temperature')
 def handle_temp(client, userdata, message):
     with app.app_context():
+        logging.debug('Got MQTT message {}/{}/{}'.format(client,userdata,message))
         dev = message.topic.replace(device_topic, '').replace('/temperature', '')
         val = message.payload.decode()
         insert_data(dev, TEMP_FUNC, val)
@@ -156,6 +161,7 @@ def new_sensor(sensorID, category):
     s = Sensors(SENSOR_NAME, mac, category)
     db.session.add(s)
     db.session.commit()
+    logging.debug('New MCP9808 sensor {}'.format(s))
     return s
 
 def insert_data(sensorID, function_number, value):
@@ -168,4 +174,5 @@ def insert_data(sensorID, function_number, value):
     e = SensorEntry(id, value)
     db.session.add(e)
     db.session.commit()
+    logging.debug('New MCP9808 reading {}'.format(e))
     return e

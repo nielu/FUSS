@@ -36,6 +36,7 @@ def start_db_smoother():
     from FUSS import DBModels, db
     from sqlalchemy import asc, desc
     from sqlalchemy.sql import and_, or_, func
+    import logging
 
     def loop():
         print('starting db smoother job')
@@ -43,15 +44,15 @@ def start_db_smoother():
         entryCount = 1000
         correctedEntries = 0
         while True:
-            print('performing db scan')
+            logging.info('performing db scan')
         
             sensors = DBModels.Sensors.query.all()
-            print ('got {} sensors'.format(len(sensors)))
+            logging.debug('got {} sensors'.format(len(sensors)))
             for s in sensors:
                 entries = DBModels.SensorEntry.query.filter \
                     (DBModels.SensorEntry.sensor_id == s.id) \
                     .order_by(desc(DBModels.SensorEntry.date)).limit(entryCount).all()
-                print('got {} entries'.format(len(entries)))
+                logging.debug('got {} entries'.format(len(entries)))
                 entryCount = len(entries)
                 if len(entries) < 100:
                     break
@@ -64,7 +65,7 @@ def start_db_smoother():
                         avgTime += (entries[i].date - entries[i+1].date)
                 avgTime = avgTime/i
                 threshold = avgTime * 1.05
-                print('average time difference between entries is {}, threshold {}' \
+                logging.debug('average time difference between entries is {}, threshold {}' \
                     .format(avgTime, threshold))
                 for i in range(entryCount - 1):
                     e1 = entries[i]
@@ -73,23 +74,22 @@ def start_db_smoother():
                     tempTime = e1.date
                     while (timeDifference > threshold):
                         tempTime -= avgTime
-                        print('time difference is {}, adding new value at {}' \
+                        logging.debug('time difference is {}, adding new value at {}' \
                             .format(timeDifference, tempTime))
 
                         e = DBModels.SensorEntry(s.id, None, tempTime)
                         print('t1: {} t2: {} t: {}'.format(e1.date, e2.date, e.date))
-                        #print(e)
                         db.session.add(e)
                         timeDifference = e.date - e2.date
-                        print('new time difference {}'.format(timeDifference))
+                        logging.debug('new time difference {}'.format(timeDifference))
                         correctedEntries += 1
                     db.session.commit()
 
-            print('Db smoother finished running, sleeping for 6h')
-            print('Corrected {} entries'.format(correctedEntries))
+            logging.info('Db smoother finished running, sleeping for 6h')
+            logging.info('Corrected {} entries'.format(correctedEntries))
             time.sleep(60 * 60 * 6)
     
     thread = threading.Thread(target=loop)
     thread.start()
-    print('Started db smoother thread')
+    logging.info('Started db smoother thread')
 

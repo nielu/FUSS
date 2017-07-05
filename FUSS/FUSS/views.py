@@ -7,6 +7,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, make_response
 from FUSS import app, models
 from timeit import default_timer as timer
+import logging
 #endregion
 
 
@@ -21,6 +22,7 @@ def login():
         success, error = models.login(request.form['username'], request.form['password'])
         if (success):
             flash('You were logged in')
+            logging.debug('User {} was logged in'.format(request.form['username']))
             return redirect(url_for('show_entries'))
     return render_template('login.html', error=error)
 
@@ -60,5 +62,6 @@ def set_options():
 @app.route('/cleanup')
 def cleanup():
     from FUSS import backgroundWorkers as bg
+    logging.info('Got db smoother request')
     bg.start_db_smoother()
     return 'OK', 201

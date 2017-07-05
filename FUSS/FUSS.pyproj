@@ -67,7 +67,6 @@
     <Content Include="FUSS\templates\devices\MCP_template.html" />
     <Content Include="FUSS\devices\__pycache__\test_device.cpython-36.pyc" />
     <Content Include="FUSS\devices\__pycache__\__init__.cpython-36.pyc" />
-    <Content Include="FUSS\schema.sql" />
     <Content Include="FUSS\static\content\bootstrap-theme.min.css" />
     <Content Include="FUSS\static\content\bootstrap.min.css" />
     <Content Include="FUSS\static\content\dashboard.css" />

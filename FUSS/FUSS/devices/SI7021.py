@@ -6,7 +6,7 @@ from sys import modules
 from datetime import datetime
 from sqlalchemy import asc, desc
 from sqlalchemy.sql import and_, or_, func
-
+import logging
 '''SI7021 device package'''
 '''Two sensors available:'''
 '''0. Temperature sensor, reads in *C'''
@@ -25,6 +25,7 @@ data_axis = ["Date", ["Temp", "Humidity"]]
 
 def init():
     mqtt.subscribe(device_topic + '#')
+    logging.info('Loaded SI7021 module')
 
 @device_blueprint.route('/')
 def main_view():
@@ -92,6 +93,7 @@ def graph_all():
     canvas.print_png(png_output)
     response = make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
+    logging.debug('Graphed all entries in SI7021. Entry count {}'.format(len(y)))
     return response
 
 @device_blueprint.route('/update', methods=['POST'])
@@ -171,6 +173,7 @@ def get_sensor_id(function_number, macAddress=None):
 @mqtt.on_topic(device_topic + '0/temperature')
 def handle_temp(client, userdata, message):
     with app.app_context():
+        logging.debug('Got MQTT message {}/{}/{}'.format(client,userdata,message))
         dev = message.topic.replace(device_topic, '').replace('/temperature', '')
         val = message.payload.decode()
         insert_data(dev, TEMP_FUNC, val)
@@ -179,6 +182,7 @@ def handle_temp(client, userdata, message):
 @mqtt.on_topic(device_topic + '0/humidity')
 def handle_hum(client, userdata, message):
     with app.app_context():
+        logging.debug('Got MQTT message {}/{}/{}'.format(client,userdata,message))
         dev = message.topic.replace(device_topic, '').replace('/humidity', '')
         val = message.payload.decode()
         insert_data(dev, HUM_FUNC, val)
@@ -191,6 +195,7 @@ def new_sensor(sensorID, category):
     s = Sensors(SENSOR_NAME, sensorID, category)
     db.session.add(s)
     db.session.commit()
+    logging.debug('New SI7021 sensor {}'.format(s))
     return s
 
 def insert_data(sensorID, function_number, value):
@@ -203,4 +208,5 @@ def insert_data(sensorID, function_number, value):
     e = SensorEntry(id, value)
     db.session.add(e)
     db.session.commit()
+    logging.debug('New SI7021 reading {}'.format(e))
     return e

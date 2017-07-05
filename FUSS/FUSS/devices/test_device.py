@@ -2,10 +2,11 @@ from flask.views import View
 from flask import render_template, session, Blueprint, make_response
 from FUSS import models, app
 from sys import modules
-
+import logging
 device_blueprint = Blueprint('test_device', __name__, template_folder='templates')
 
 def init():
+    logging.info('Dummy module loaded')
     pass
 
 @device_blueprint.route('/')
@@ -24,8 +25,9 @@ def graph_all():
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
     from matplotlib.dates import date2num
+    from timeit import default_timer as timer
     import io
-    
+    startTime = timer()
     cnt = 15
     y = get_all_data()
     fig = Figure()
@@ -42,6 +44,8 @@ def graph_all():
     canvas.print_png(png_output)
     response = make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
+    
+    logging.debug('Graphed all entries, elapsed time {}s'.format(timer() - startTime))
     return response
 
 def get_all_data():
