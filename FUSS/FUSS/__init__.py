@@ -22,7 +22,13 @@ db_uri = 'db_engine://db_user:db_password@db_address/db_name'
 
 
 logging.basicConfig(filename='FUSS.log', level=logging.DEBUG, \
-    format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', \
+    datefmt='%m/%d/%Y %I:%M:%S %p')
+
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+
+logging.getLogger('').addHandler(console)
 
 try:
     from config import *
