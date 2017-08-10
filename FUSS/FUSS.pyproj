@@ -37,6 +37,7 @@
     </Compile>
     <Compile Include="FUSS\devices\SI7021.py" />
     <Compile Include="FUSS\devices\MCP9808.py" />
+    <Compile Include="FUSS\devices\GardenGnome.py" />
     <Compile Include="FUSS\devices\test_device.py" />
     <Compile Include="FUSS\devices\__init__.py" />
     <Compile Include="FUSS\models.py">
@@ -63,6 +64,9 @@
   <ItemGroup>
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
+    <Content Include="FUSS\templates\devices\GardenGnome.html" />
+    <Content Include="FUSS\templates\adminPanel.html" />
+    <Content Include="FUSS\templates\show_all.html" />
     <Content Include="FUSS\templates\devices\SI_template.html" />
     <Content Include="FUSS\templates\devices\MCP_template.html" />
     <Content Include="FUSS\devices\__pycache__\test_device.cpython-36.pyc" />
@@ -71,12 +75,10 @@
     <Content Include="FUSS\static\content\bootstrap.min.css" />
     <Content Include="FUSS\static\content\dashboard.css" />
     <Content Include="FUSS\templates\devices\dummy_page.html" />
+    <Content Include="FUSS\templates\layout_large_view.html" />
     <Content Include="FUSS\templates\layout.html" />
     <Content Include="FUSS\templates\register.html" />
     <Content Include="FUSS\templates\login.html" />
-    <Content Include="FUSS\templates\options.html" />
-    <Content Include="FUSS\templates\show_entries.html" />
-    <Content Include="FUSS\templates\show_temp.html" />
     <Content Include="requirements.txt" />
     <Content Include="FUSS\static\content\site.css" />
     <Content Include="FUSS\static\fonts\glyphicons-halflings-regular.eot" />

@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block body %}
+<h1>Admin panel</h1>
+<br />
+{% if users %}
+<p>Users</p>
+{% for user in users %}
+<form method="post" action="{{url_for('modify_user')}}" id="user_{{user.id}}">
+    <input type="hidden" name="userID" value="{{user.id}}"/>
+</form>
+{% endfor %}
+{% elif sensors %}
+<p>Sensors</p>
+{% for s in sensors %}
+<form method="post" action="{{url_for('modify_sensor')}}" id="sensor_{{s.id}}">
+    <input type="hidden" name="sensorID" value="{{s.id}}" />
+</form>
+{% endfor %}
+{% endif %}
+
+<table style="width:75%">
+    {% if users %}
+    <tr>
+        <th>ID</th>
+        <th>name</th>
+        <th>password hash</th>
+        <th>access level</th>
+    </tr>
+    {% elif sensors %}
+    <tr>
+        <th>ID</th>
+        <th>name</th>
+        <th>MAC</th>
+        <th>Function</th>
+    </tr>
+    {% endif %}
+    {% for user in users %}
+    <tr>
+        <td>{{user.id}}</td>
+        <td>{{user.username}}</td>
+        <td>{{user.password}}</td>
+        <td><input type="text" name="newLevel" value="{{user.level}}" form="user_{{user.id}}" /></td>
+        <td><input type="button" value="Update" form="user_{{user.id}}"/></td>
+    </tr>
+    {% endfor %}
+    {% for sensor in sensors %}
+    <tr>
+        <td>{{sensor.id}}</td>
+        <td><input type="text" name="newName" value="{{sensor.name}}" form="sensor_{{sensor.id}}"/></td>
+        <td>{{sensor.mac_address}}</td>
+        <td>{{types[sensor.function_number - 1]}}</td>
+        <td><input type="button" value="Update" form="sensor_{{sensor.id}}"/></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

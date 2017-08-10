@@ -64,7 +64,7 @@ def start_db_smoother():
                     else:
                         avgTime += (entries[i].date - entries[i+1].date)
                 avgTime = avgTime/i
-                threshold = avgTime * 1.05
+                threshold = avgTime * 1.01
                 logging.debug('average time difference between entries is {}, threshold {}' \
                     .format(avgTime, threshold))
                 for i in range(entryCount - 1):

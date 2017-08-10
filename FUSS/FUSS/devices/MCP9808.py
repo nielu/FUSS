@@ -12,7 +12,7 @@ import logging
 '''0. Temperature sensor, reads in *C'''
 '''See /device_fw/MCP9808 sketch'''
 
-TEMP_FUNC = 0
+TEMP_FUNC = 1
 SENSOR_NAME = 'mcp9808'
 device_topic = 'sensor/mcp9808/'
 

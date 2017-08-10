@@ -10,13 +10,16 @@
 
     <title>Dashboard Template for Bootstrap</title>
 
-    <link rel="stylesheet" href="{{url_for('static', filename='content/bootstrap.min.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='content/bootstrap.min.css')}}"/>
     <!-- Optional theme -->
-    <link rel="stylesheet" href="{{url_for('static', filename='content/bootstrap-theme.min.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='content/bootstrap-theme.min.css')}}"/>
     <!-- Custom styles for this template -->
     <link href="{{url_for('static', filename='content/site.css')}}" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="{{url_for('static', filename='content/dashboard.css')}}" rel="stylesheet">
+
+    
+
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -39,6 +42,9 @@
                     <li><a href="{{ url_for('register_user') }}">Register</a></li>
                     <li><a href="{{ url_for('login') }}">log in</a></li>
                     {% else %}
+                    {% if session.isAdmin %}
+                    <li><a href="{{ url_for('admin_panel') }}">Admin</a></li>
+                    {% endif %}
                     <li><a href="#">Settings</a></li>
                     <li><a href="#">Profile</a></li>
                     <li><a href="{{ url_for('logout') }}">log out</a></li>
@@ -47,48 +53,9 @@
             </div>
         </div>
     </nav>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-2 col-md-1 sidebar">
-                <ul class="nav nav-sidebar">
-                    <li>Devices:</li>
-                    {% for dev in config['DEVICES'] %}
-                    <li><a href="/dev/{{ dev }}">{{ dev }}</a></li>
-                    {% endfor %}
-                    {% if not session['isAdmin'] %}
-                    {% else %}
-                    <li>Settings:</li>
-                    <li><a href="{{ url_for('user_panel')}}">Users</a></li>
-                    <li><a href="{{ url_for('device_panel')}}">Devices</a></li>
-                    <li><a href="{{ url_for('system_panel')}}">System</a></li>
-                    <li><a href="{{ url_for('alarm_panel')}}">Alarms</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-            <div class="col-sm-8 col-sm-offset-2 col-md-9 col-md-offset-1 main">
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <div id="flashModal" class="modal fade" role="dialog">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                {% for message in messages %}
-                                <p>{{ message }}</p>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                {% endwith %}
-                {% block body %}{% endblock %}
-            </div>
-            <div class="col-sm-3 col-sm-offset-10 col-md-2 col-md-offset-10 sidebar">
-                {% block settings %} {% endblock %}
-            </div>
-
-        </div>
-    </div>
+    {% block body %}
+    
+    {% endblock %}
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -97,11 +64,6 @@
     <script src="{{url_for('static', filename='scripts/bootstrap.min.js')}}"></script>
     <!--Highcharts -->
     <script src="https://code.highcharts.com/stock/highstock.js"></script>
-    <script type="text/javascript">
-    $(window).on('load',function(){
-        $('#flashModal').modal('show');
-    });
-    </script>
     {% block scripts %}{% endblock %}
 </body>
 

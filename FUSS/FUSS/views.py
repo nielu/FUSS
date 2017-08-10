@@ -30,6 +30,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    session.pop('isAdmin', None)
     flash('You were logged out')
     return render_template('layout.html')
 
@@ -48,6 +49,7 @@ def register_user():
         success, error = models.registerUser(login, pass1)
         if (success):
             session['logged_in'] = True
+            session['isAdmin'] = False
             return redirect(url_for('show_entries'))
     return render_template('register.html', error=error)
 
@@ -65,3 +67,74 @@ def cleanup():
     logging.info('Got db smoother request')
     bg.start_db_smoother()
     return 'OK', 201
+
+@app.route('/view_all')
+def view_all():
+    return render_template('show_all.html', data=models.getAllData())
+
+@app.route('/json')
+def return_json():
+    return models.getJSON()
+
+def unauthorizedAccess():
+    flash('You are not authorized for this action!')
+    return render_template('layout.html', error='Not authorized')
+
+@app.route('/admin')
+def admin_panel():
+    access = 'isAdmin' in session and session['isAdmin']
+    if not access:
+        return unauthorizedAccess()
+    return render_template('adminPanel.html')
+
+@app.route('/admin/users')
+def user_panel():
+    access = 'isAdmin' in session and session['isAdmin']
+    if not access:
+        return unauthorizedAccess()
+    return render_template('adminPanel.html', users=models.getUsers())
+
+@app.route('/admin/devices')
+def device_panel():
+    access = 'isAdmin' in session and session['isAdmin']
+    if not access:
+        return unauthorizedAccess()
+    return render_template('adminPanel.html', sensors=models.getSensors(), types=models.getSensorTypes())
+
+@app.route('/admin/system')
+def system_panel():
+    access = 'isAdmin' in session and session['isAdmin']
+    if not access:
+        return unauthorizedAccess()
+    return render_template('adminPanel.html')
+
+@app.route('/admin/alarms')
+def alarm_panel():
+    access = 'isAdmin' in session and session['isAdmin']
+    if not access:
+        return unauthorizedAccess()
+    return render_template('adminPanel.html')
+
+@app.route('/admin/users/set', methods=['POST'])
+def modify_user():
+    access = 'isAdmin' in session and session['isAdmin']
+    if not access or not request.method == 'POST':
+        return unauthorizedAccess()
+    if 'userID' in request.form and 'newLevel' in request.form:
+        res, msg = models.updateUserAccessLevel(request.form['userID'], request.form['newLevel'])
+        flash(msg)
+    else:
+        flash('Invalid parameters')
+    return user_panel()
+
+@app.route('/admin/devices/set', methods=['POST'])
+def modify_sensor():
+    access = 'isAdmin' in session and session['isAdmin']
+    if not access or not request.method == 'POST':
+        return unauthorizedAccess()
+    if 'sensorID' in request.form and 'newName' in request.form:
+        res, msg = models.updateSensorName(request.form['sensorID'], request.form['newName'])
+        flash(msg)
+    else:
+        flash('Invalid parameters')
+    return device_panel()
