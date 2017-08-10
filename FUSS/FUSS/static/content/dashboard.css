@@ -103,3 +103,14 @@ body {
   display: inline-block;
   border-radius: 50%;
 }
+
+.button {
+    float: left;
+    border: 1px solid black;
+}
+.button.on {
+    background-color: green;
+}
+.button.off{
+    background-color: gray;
+}

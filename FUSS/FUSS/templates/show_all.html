@@ -5,7 +5,7 @@
         <div class="main">
             <div id="container"></div>
             {% for entry in data %}
-            <button id="toggle_{{entry['id']}}" class="autocompare">{{entry['name']}}</button>
+            <button id="toggle_{{entry['id']}}" class="button on">{{entry['name']}}</button>
             {% endfor %}
         </div>
     </div>
@@ -102,12 +102,14 @@ $.getJSON('{{url_for('return_json')}}', function (json) {
     });
     {% for entry in data %}
 
-     var $button = $('#toggle_{{entry['id']}}');
-     $button.click(function () {
+     var $button{{entry['id']}} = $('#toggle_{{entry['id']}}');
+     $button{{entry['id']}}.click(function () {
         var series = chart.series[{{entry['id']}}];
         if (series.visible) {
+            $button{{entry['id']}}.removeClass('on').addClass('off');
             series.hide();
         } else {
+            $button{{entry['id']}}.removeClass('off').addClass('on');
             series.show();
         }
     });
