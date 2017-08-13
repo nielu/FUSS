@@ -39,8 +39,7 @@
                     <li><a href="{{ url_for('register_user') }}">Register</a></li>
                     <li><a href="{{ url_for('login') }}">log in</a></li>
                     {% else %}
-                    <li><a href="#">Settings</a></li>
-                    <li><a href="#">Profile</a></li>
+                    <li><a href="{{ url_for('profile_panel') }}">Profile</a></li>
                     <li><a href="{{ url_for('logout') }}">log out</a></li>
                     {% endif %}
                 </ul>

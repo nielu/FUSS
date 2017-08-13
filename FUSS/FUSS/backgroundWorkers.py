@@ -33,17 +33,17 @@ def start_db_smoother():
     import time
     from datetime import datetime
     import sys
-    from FUSS import DBModels, db
+    from FUSS import DBModels, db, app
     from sqlalchemy import asc, desc
     from sqlalchemy.sql import and_, or_, func
     import logging
 
     def loop():
-        print('starting db smoother job')
-        time.sleep(2)
-        entryCount = 1000
-        correctedEntries = 0
-        while True:
+        with app.app_context():
+            print('starting db smoother job')
+            time.sleep(2)
+            entryCount = 1000
+            correctedEntries = 0
             logging.info('performing db scan')
         
             sensors = DBModels.Sensors.query.all()
@@ -85,10 +85,9 @@ def start_db_smoother():
                         correctedEntries += 1
                     db.session.commit()
 
-            logging.info('Db smoother finished running, sleeping for 6h')
+            logging.info('Db smoother finished running')
             logging.info('Corrected {} entries'.format(correctedEntries))
-            time.sleep(60 * 60 * 6)
-    
+
     thread = threading.Thread(target=loop)
     thread.start()
     logging.info('Started db smoother thread')

@@ -61,12 +61,17 @@ def set_options():
             session['count_limit'] = limit
     return 'OK',201
 
-@app.route('/cleanup')
+@app.route('/admin/cleanup')
 def cleanup():
     from FUSS import backgroundWorkers as bg
     logging.info('Got db smoother request')
-    bg.start_db_smoother()
-    return 'OK', 201
+    try:
+        bg.start_db_smoother()
+        flash('DB smoother running in background')
+        return render_template('adminPanel.html', system=True)
+    except Exception:
+        flash('Failed to run db smoother!')
+        return render_template('adminPanel.html', system=True)
 
 @app.route('/view_all')
 def view_all():
@@ -106,7 +111,7 @@ def system_panel():
     access = 'isAdmin' in session and session['isAdmin']
     if not access:
         return unauthorizedAccess()
-    return render_template('adminPanel.html')
+    return render_template('adminPanel.html', system=True)
 
 @app.route('/admin/alarms')
 def alarm_panel():
@@ -138,3 +143,28 @@ def modify_sensor():
     else:
         flash('Invalid parameters')
     return device_panel()
+
+@app.route('/profile')
+def profile_panel():
+    if not 'logged_in' in session or session['logged_in'] == False:
+        return unauthorizedAccess()
+    return render_template('profile.html', user=models.getUser(session['userID']))
+
+@app.route('/profile/update_password', methods=['POST'])
+def update_user_password():
+    access = 'logged_in' in session and session['logged_in'] == True
+    if not access or request.method != 'POST':
+        return unauthorizedAccess()
+    if 'password' in request.form and 'password2' in request.form and 'oldPassword' in request.form:
+        pwd = request.form['password']
+        pwd2 = request.form['password2']
+        if pwd != pwd2:
+            flash('Password dont match!')
+        elif len(pwd) < 8:
+            flash('Password is too short!')
+        else:
+            success, msg = models.updateUserPassword(session['userID'], request.form['oldPassword'], pwd)
+            flash(msg)
+    else:
+        flash('Invalid request')
+    return profile_panel()

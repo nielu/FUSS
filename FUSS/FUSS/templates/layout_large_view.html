@@ -45,8 +45,7 @@
                     {% if session.isAdmin %}
                     <li><a href="{{ url_for('admin_panel') }}">Admin</a></li>
                     {% endif %}
-                    <li><a href="#">Settings</a></li>
-                    <li><a href="#">Profile</a></li>
+                    <li><a href="{{ url_for('profile_panel') }}">Profile</a></li>
                     <li><a href="{{ url_for('logout') }}">log out</a></li>
                     {% endif %}
                 </ul>

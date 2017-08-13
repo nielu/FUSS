@@ -64,6 +64,7 @@
   <ItemGroup>
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
+    <Content Include="FUSS\templates\profile.html" />
     <Content Include="FUSS\templates\devices\GardenGnome.html" />
     <Content Include="FUSS\templates\adminPanel.html" />
     <Content Include="FUSS\templates\show_all.html" />

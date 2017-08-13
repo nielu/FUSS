@@ -59,6 +59,7 @@ def login(name, password):
         return False, 'Invalid username or password'
     session['logged_in'] = True
     session['isAdmin'] = user.isAdmin()
+    session['userID'] = user.id
     return True, 'Logged in'
 
 def floatify(reading):
@@ -185,6 +186,19 @@ def updateUserAccessLevel(userID, newLevel):
     logging.error(msg)
     return False, msg
 
+def updateUserPassword(userID, oldPassword, newPassword):
+    msg = ''
+    usr = getUser(userID)
+    if usr is None:
+        return False, 'User does not exist!'
+    if not bcrypt.check_password_hash(usr.password, oldPassword):
+        return False, 'Old password is invalid!'
+    hash = bcrypt.generate_password_hash(newPassword).decode('utf-8')
+    usr.password = hash
+    db.session.commit()
+    return True, 'Updated password'
+
+
 def getUsers():
     return User.query.all()
 
@@ -193,3 +207,6 @@ def getSensors():
 
 def getSensorTypes():
     return SensorType.query.all()
+
+def getUser(userID):
+    return User.query.filter(User.id == userID).first()
