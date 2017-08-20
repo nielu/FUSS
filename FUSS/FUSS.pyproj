@@ -32,6 +32,9 @@
   <ItemGroup>
     <Compile Include="config.py-sample" />
     <Compile Include="config.py" />
+    <Compile Include="FUSS\alerts.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FUSS\backgroundWorkers.py">
       <SubType>Code</SubType>
     </Compile>
@@ -48,7 +51,7 @@
     </Compile>
     <Compile Include="runserver.py" />
     <Compile Include="FUSS\__init__.py" />
-    <Compile Include="FUSS\views.py" />
+    <Compile Include="FUSS\controller.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FUSS\" />
