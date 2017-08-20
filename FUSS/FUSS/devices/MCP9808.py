@@ -31,106 +31,6 @@ def main_view():
 def get_objects():
     return {'device_name' : __name__, 'device_type': 'Temperature-sensor'}
 
-@device_blueprint.route('/all.png')
-def graph_all():
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-    from matplotlib.figure import Figure
-    from matplotlib.dates import date2num
-    import io
-    
-    cnt = 15
-    y = get_all_data()[0]
-    fig = Figure()
-    canvas = FigureCanvas(fig)
-    ax = fig.add_subplot(111)
-    ax.plot(y)
-    ax.set_ylabel('Temp: *C')
-    ax.set_xticklabels([])
-    png_output = io.BytesIO()
-    fig.tight_layout()
-    canvas.print_png(png_output)
-    response = make_response(png_output.getvalue())
-    response.headers['Content-Type'] = 'image/png'
-    logging.debug('Graphed all entries in MCP9808. Entry count {}'.format(len(y)))
-    return response
-
-@device_blueprint.route('/graph.png')
-def temp_graph():
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-    from matplotlib.figure import Figure
-    from matplotlib.dates import date2num
-    import io
-    
-    cnt = 15
-    if 'mcp_limit' in session:
-        cnt = session['mcp_limit']
-    x,y = get_data(None, None, cnt)
-    fig = Figure()
-    canvas = FigureCanvas(fig)
-    ax = fig.add_subplot(111)
-    ax.plot(range(0,len(x)),y[0])
-    ax.set_xticks(range(0,len(x)))
-    ax.set_xticklabels(x, rotation=45)
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Temp: *C')
-    png_output = io.BytesIO()
-    fig.tight_layout()
-    canvas.print_png(png_output)
-    response = make_response(png_output.getvalue())
-    response.headers['Content-Type'] = 'image/png'
-    return response
-
-@device_blueprint.route('/update', methods=['POST'])
-def update_settings():
-    if request.method == 'POST':
-        if 'entry_count' in request.form:
-            session['mcp_limit'] = int(request.form['entry_count'])
-            logging.debug('set mcp_limit to ' + session['mcp_limit'])
-    return main_view()
-
-
-def get_all_data():
-    sensorID = get_sensor_id(TEMP_FUNC)[0]
-
-    res = SensorEntry.query.filter(SensorEntry.sensor_id == sensorID).order_by(asc(SensorEntry.date)).all()
-    y = [[]]
-    for e in res:
-        y[0].append(e.reading)
-    return y
-
-
-def get_data(d1, d2, sample_count=10):
-    import datetime
-    tformat = '%Y-%m-%d'
-    """gets sensor readings from d1 to d2 """
-    sensorID = get_sensor_id(TEMP_FUNC)[0]
-    if d1 == None:
-        startDate = SensorEntry.query.filter(SensorEntry.sensor_id == sensorID) \
-        .order_by(asc(SensorEntry.date)).first().date
-    else:
-        startDate = d1
-
-    if d2 == None:
-        endDate = SensorEntry.query.filter(SensorEntry.sensor_id == sensorID) \
-            .order_by(desc(SensorEntry.date)).first().date
-    else:
-        endDate = d2
-    delta = endDate - startDate
-    separator = delta / sample_count
-    x = []
-    y = [[]]
-    d1 = startDate
-    d2 = startDate + separator
-    for i in range(0, sample_count):
-        avg = db.session.query(func.avg(SensorEntry.reading)) \
-            .filter((SensorEntry.sensor_id == sensorID) & ((SensorEntry.date >= d1) & (SensorEntry.date < d2))).first()[0]
-
-        y[0].append(avg)
-        x.append((d1.strftime(tformat)))
-        d1 += separator
-        d2 += separator
-    return x,y
-
 def get_sensor_id(function_number, macAddress=None):
     '''Gets id of devices with following mac address and func number'''
     if macAddress is None:
@@ -145,10 +45,10 @@ def get_sensor_id(function_number, macAddress=None):
         retVal.append(int(s.id))
     return retVal
 
-@mqtt.on_topic(device_topic + '0/temperature')
+@mqtt.on_topic(device_topic + '+/temperature')
 def handle_temp(client, userdata, message):
     with app.app_context():
-        logging.debug('Got MQTT message {}/{}/{}'.format(client,userdata,message))
+        #logging.debug('Got MQTT message {}/{}/{}'.format(client,userdata,message))
         dev = message.topic.replace(device_topic, '').replace('/temperature', '')
         val = message.payload.decode()
         insert_data(dev, TEMP_FUNC, val)

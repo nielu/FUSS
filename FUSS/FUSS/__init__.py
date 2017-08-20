@@ -44,6 +44,8 @@ debug = True
 mqtt_broker = '127.0.0.1'
 mqtt_port = 1883
 
+sms_api_key = ''
+
 db_uri = 'db_engine://db_user:db_password@db_address/db_name'
 
 
@@ -52,7 +54,7 @@ logging.basicConfig(filename='FUSS.log', level=logging.DEBUG, \
     datefmt='%m/%d/%Y %I:%M:%S %p')
 
 console = logging.StreamHandler()
-console.setLevel(logging.INFO)
+console.setLevel(logging.DEBUG)
 
 logging.getLogger('').addHandler(console)
 
@@ -69,6 +71,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 
 app.config['SECRET_KEY'] = secret_key
 
+app.config['SMS_API_KEY'] = sms_api_key
+
 bcrypt = Bcrypt(app)
 mqtt = Mqtt(app)
 db = SQLAlchemy(app)
@@ -76,6 +80,5 @@ db = SQLAlchemy(app)
 
 logging.info('Running on {}:{}. MQTT broker {}:{}'.format(host,port, mqtt_broker, mqtt_port))
 
-import FUSS.views
 import FUSS.models
-
+import FUSS.controller

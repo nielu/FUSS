@@ -1,13 +1,7 @@
 #region imports
 from FUSS import app, bcrypt, db
 from FUSS.DBModels import *
-from sqlalchemy import asc,desc
-from sqlalchemy.sql import and_, or_, func, select
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-   flash, make_response, config, _app_ctx_stack
-from timeit import default_timer as timer
-import sqlite3
-import os
+from flask import session
 import datetime
 import pkgutil
 import logging
@@ -18,15 +12,11 @@ from datetime import datetime, date
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):
-
         if isinstance(o, (datetime, date)):
-            return js_date_utc(o)
+            return js_date_milis(o)
         return json.JSONEncoder.default(self, o)
 
 
-#region Database
-
-#endregion
 @app.before_first_request
 def init_devices():
     import pkgutil
@@ -72,9 +62,9 @@ def floatify(reading):
         logging.info('exception with {}'.format(reading))
         return math.nan
 
-def js_date_utc(date : datetime) -> str:
-    return 'Date.UTC({}, {}, {}, {}, {}, {})' \
-        .format(date.year, date.month - 1, date.day, date.hour, date.minute, date.second)
+def js_date_milis(date : datetime) -> float:
+    epoch = datetime.utcfromtimestamp(0)
+    return (date - epoch).total_seconds() * 1000.0
 
 def getSensorID(function_number):
     '''Gets id of devices with following func number'''
@@ -85,11 +75,11 @@ def getSensor(id):
 
 def getSensorReadings(sensor_id):
     return SensorEntry.query.filter(SensorEntry.sensor_id == sensor_id) \
-                .order_by(asc(SensorEntry.date)).with_entities(SensorEntry.reading).all()
+                .with_entities(SensorEntry.date, SensorEntry.reading).all()
 
 def getStartDate(sensor_id):
     return SensorEntry.query.filter(SensorEntry.sensor_id == sensor_id) \
-                .order_by(asc(SensorEntry.date)).with_entities(SensorEntry.date).first()[0],
+                .with_entities(SensorEntry.date).first()[0],
 
 def getJSON():
     tempID = getSensorID(1)
@@ -98,11 +88,11 @@ def getJSON():
 
     for i in range(len(tempID)):
         y.append({
-            'data' : [floatify(r[0]) for r in getSensorReadings(tempID[i].id)]
+            'data' : [[r[0],floatify(r[1])] for r in getSensorReadings(tempID[i].id)]
           })
     for i in range(len(humID)):
         y.append({
-            'data' : [floatify(r[0]) for r in getSensorReadings(humID[i].id)]
+            'data' : [[r[0],floatify(r[1])] for r in getSensorReadings(humID[i].id)]
             })
     
     return json.dumps(y, cls=DateTimeEncoder)
@@ -118,31 +108,15 @@ def getAllData():
             'id': i,
             'name': tempID[i].name,
             'axis': 0,
-            'pointstart': js_date_utc(getStartDate(tempID[i].id)[0]),
-            'pointinterval' : get_average_interval(tempID[i].id)
            })
     for i in range(len(humID)):
         y.append({
             'id' : len(tempID) + i,
             'name': humID[i].name,
             'axis': 1,
-            'pointstart' : js_date_utc(getStartDate(humID[i].id)[0]),
-            'pointinterval' : get_average_interval(humID[i].id)
             })
     
     return y
-
-def get_average_interval(sensorID, sampleCount=10000):
-    entries = SensorEntry.query.filter(SensorEntry.sensor_id == sensorID) \
-                .order_by(desc(SensorEntry.date)).limit(sampleCount).all()
-    avg = None
-    for i in range(sampleCount - 1):
-        if avg is None:
-            avg = entries[i].date - entries[i+1].date
-        else:
-            avg +=entries[i].date - entries[i+1].date
-    avg = avg / (sampleCount - 1)
-    return avg.total_seconds() * 1000
 
 def updateSensorName(sensorID, newName):
     msg = ''
@@ -210,3 +184,4 @@ def getSensorTypes():
 
 def getUser(userID):
     return User.query.filter(User.id == userID).first()
+

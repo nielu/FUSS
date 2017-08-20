@@ -19,6 +19,15 @@
 {% elif system %}
 <p>System settings</p>
 <a href="{{url_for('cleanup')}}">Run db cleanup</a>
+{% elif alarm %}
+<p>Alarms</p>
+<form method="post" id="smsForm" action="{{url_for('sendMessage')}}">
+    <input type="text" name="number" />
+    <br />
+    <textarea id="smsForm" name="message" class="text" cols="40" rows="4">
+    </textarea>
+    <button>Send</button>
+</form>
 {% endif %}
 
 <table style="width:75%">

@@ -2,11 +2,9 @@
 Routes and views for the flask application.
 """
 #region imports
-from datetime import datetime
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash, make_response
-from FUSS import app, models
-from timeit import default_timer as timer
+from flask import request, session, redirect, url_for, \
+     render_template, flash
+from FUSS import app, models, alerts
 import logging
 #endregion
 
@@ -118,7 +116,7 @@ def alarm_panel():
     access = 'isAdmin' in session and session['isAdmin']
     if not access:
         return unauthorizedAccess()
-    return render_template('adminPanel.html')
+    return render_template('adminPanel.html', alarm=True)
 
 @app.route('/admin/users/set', methods=['POST'])
 def modify_user():
@@ -168,3 +166,18 @@ def update_user_password():
     else:
         flash('Invalid request')
     return profile_panel()
+
+@app.route('/admin/alarms/send', methods=['POST'])
+def sendMessage():
+    access = 'isAdmin' in session and session['isAdmin']
+    if not access or request.method != 'POST':
+        return unauthorizedAccess()
+    if 'number' in request.form and 'message' in request.form:
+        res = alerts.sendMessage(str(request.form['number']), str(request.form['message']))
+        if res:
+            flash('Message sent')
+        else:
+            flash('Failed to send message, check logs for more info')
+    else:
+        flash('Invalid request')
+    return alarm_panel()

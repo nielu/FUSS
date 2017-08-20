@@ -94,8 +94,7 @@ $.getJSON('{{url_for('return_json')}}', function (json) {
 			    name: '{{ entry['name'] }}',
                 yAxis: {{ entry['axis'] }},
 			    data: json[{{entry['id']}}].data,
-			    pointInterval: {{ entry['pointinterval']}},
-                pointStart: {{entry['pointstart']}}
+                turboThreshold : 0
 		    },
         {% endfor %}
         ]
