@@ -173,5 +173,5 @@ void gettemperature()
 	temp_c = mcp.readTempC();
 	// Check if any reads failed and exit early (to try again).
 	if (isnan(temp_c))
-		Serial.println("Failed to read from SI sensor!");
+		Serial.println("Failed to read from MCP sensor!");
 }
