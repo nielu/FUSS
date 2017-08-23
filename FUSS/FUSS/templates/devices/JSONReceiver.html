@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+<table style="width:75%">
+    <tr>
+        <th>Date</th>
+        <th>MAC</th>
+        <th>Voltage</th>
+        <th>Free heap</th>
+        <th>Last error</th>
+    </tr>
+    {% for t in objects['telemetry'] %}
+    <tr>
+        <td>{{t.date}}</td>
+        <td>{{t.mac_address}}</td>
+        <td>{{t.voltage}}</td>
+        <td>{{t.free_heap}}</td>
+        <td>{{t.error}}</td>
+    </tr>    
+    {% endfor %}
+</table>
+{% endblock %}

@@ -59,20 +59,24 @@ class SensorEntry(db.Model):
         return ['date', 'reading']
 
 class SensorTelemetry(db.Model):
+    __tablename__ = 'sensortelemetry'
+
     id = db.Column(db.Integer, primary_key=True)
-    sensor_id = db.Column(db.Integer)
+    mac_address = db.Column(db.BigInteger)
     date = db.Column(db.DateTime)
     voltage = db.Column(db.Text)
     error = db.Column(db.Text)
     json_data = db.Column(db.Text)
+    free_heap = db.Column(db.Integer)
 
-    def __init__(self, sensor_id, date, voltage=None, uptime=None, error=None, json_data=None):
-        self.sensor_id = sensor_id
+    def __init__(self, mac, date, voltage=None, uptime=None, error=None, json_data=None, free_heap=None):
+        self.mac_address = mac
         self.date = date
         self.voltage = voltage
         self.uptime = uptime
         self.error = error
         self.json_data = json_data
+        self.free_heap = free_heap
 
 class SensorType(db.Model):
     __tablename__ = 'sensortype'
