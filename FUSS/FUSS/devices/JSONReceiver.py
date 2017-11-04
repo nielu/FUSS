@@ -24,6 +24,7 @@ def handleMQTTMessage(client, userdata, message):
     message = message.payload
     logging.info('got {}'.format(message))
     try:
+        msg = str(msg, 'utf-8')
         msg = json.loads(message)
     except ValueError as err:
         logging.ERROR('Failed to parse json message! Error: "{}"\nMessage: "{}"'.
