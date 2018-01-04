@@ -69,6 +69,7 @@
     <Content Include="FUSS\templates\profile.html" />
     <Content Include="FUSS\templates\devices\GardenGnome.html" />
     <Content Include="FUSS\templates\adminPanel.html" />
+    <Content Include="FUSS\templates\show_voltage.html" />
     <Content Include="FUSS\templates\show_all.html" />
     <Content Include="FUSS\devices\__pycache__\test_device.cpython-36.pyc" />
     <Content Include="FUSS\devices\__pycache__\__init__.cpython-36.pyc" />

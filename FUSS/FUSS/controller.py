@@ -75,9 +75,17 @@ def cleanup():
 def view_all():
     return render_template('show_all.html', data=models.getAllData())
 
+@app.route('/view_voltage')
+def view_voltage():
+    return render_template('show_voltage.html', data=models.getAllData())
+
 @app.route('/json')
 def return_json():
     return models.getJSON()
+
+@app.route('/json_voltage')
+def return_json_voltage():
+    return models.getVoltage()
 
 def unauthorizedAccess():
     flash('You are not authorized for this action!')

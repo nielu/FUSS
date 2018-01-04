@@ -81,6 +81,10 @@ def getStartDate(sensor_id):
     return SensorEntry.query.filter(SensorEntry.sensor_id == sensor_id) \
                 .with_entities(SensorEntry.date).first()[0],
 
+def getTelemetry(mac):
+    return SensorTelemetry.query.filter(SensorTelemetry.mac_address == mac) \
+        .with_entities(SensorTelemetry.date, SensorTelemetry.voltage).all()
+
 def getJSON():
     tempID = getSensorID(1)
     humID = getSensorID(2)
@@ -95,6 +99,16 @@ def getJSON():
             'data' : [[r[0],floatify(r[1])] for r in getSensorReadings(humID[i].id)]
             })
     
+    return json.dumps(y, cls=DateTimeEncoder)
+
+def getVoltage():
+    sensors= getSensors()
+    y = []
+    for s in sensors:
+        y.append({
+            'name': s.name,
+            'data': [[t[0], t[1]] for t in getTelemetry(s.mac_address)]
+            })
     return json.dumps(y, cls=DateTimeEncoder)
 
 def getAllData():
